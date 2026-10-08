@@ -40,3 +40,12 @@ bots/llm-memory/
 bash.exe.stackdump
 
 nul
+
+# Local machine setup: LAN IPs, local DB password, dashboard proxy (never commit)
+compose.lan.yaml
+compose.local.yaml
+config.lan.yaml
+dashboard-share.conf
+
+# Python bytecode
+__pycache__/
