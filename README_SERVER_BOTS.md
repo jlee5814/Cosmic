@@ -181,6 +181,15 @@ Follow mode behavior
 | `fame me` | Bot fames you (subject to daily & monthly limits) |
 | `fame <name>` | Bot fames the named player or bot on the map |
 
+### Navi (owner tools, whisper only)
+
+Whisper a bot you own. Answers come back by whisper and only to the bot's registered owner, and only if that owner is on the service's `NAVI_OWNERS` allowlist; in map or party chat the bot just asks you to whisper. Needs the host service in [tools/navi](tools/navi/README.md).
+
+| Whisper | Effect |
+|---|---|
+| `navi email` / `navi check my email` / `navi inbox` | Unread Gmail Primary count plus the newest three senders and subjects (read only) |
+| `navi` | Lists what Navi can do |
+
 ### Quests
 
 Bots auto-run worthwhile mob quests in the background while grinding.

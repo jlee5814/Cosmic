@@ -738,6 +738,11 @@ public class BotChatManager {
     static void handleChat(BotEntry entry, String message) {
         LAST_CHAT_HANDLED.set(true);
         markOwnerActive(entry);
+        if (BotNaviManager.isNaviCommand(message)) {
+            // Owner whispers are routed to Navi before reaching here; anything else is public chat.
+            BotNaviManager.declineOutsideWhisper(entry);
+            return;
+        }
         if (isJobPlanCommand(message)) {
             Job goal = matchJobPlan(message);
             BotManager.getInstance().botReply(entry, goal == null

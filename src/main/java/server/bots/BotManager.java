@@ -6293,6 +6293,17 @@ public class BotManager {
         if (!(target.getClient() instanceof BotClient)) {
             return;
         }
+        // Navi tools return private data, so they answer only the REGISTERED owner (roster bots
+        // run self-owned, so the active owner isn't the right check) and never fall into the
+        // shared chat pipeline. Anyone else gets silence.
+        if (BotNaviManager.isNaviCommand(message)) {
+            BotEntry naviEntry = getEntryByBotCharId(target.getId());
+            Integer registeredOwnerId = BotOwnershipService.getInstance().getRegisteredOwnerId(target.getId());
+            if (naviEntry != null && registeredOwnerId != null && registeredOwnerId == speaker.getId()) {
+                BotNaviManager.handleWhisper(naviEntry, speaker, message);
+            }
+            return;
+        }
         // Resolve the bot's entry under its ACTIVE owner (a self-owned bot owns itself), so an admin
         // can whisper-command a foreign/self-owned bot — not just the speaker's own bots.
         Character botOwner = getActiveOwnerByBotCharId(target.getId());
