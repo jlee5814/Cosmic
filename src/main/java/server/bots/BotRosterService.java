@@ -15,6 +15,12 @@ final class BotRosterService {
 
     private BotRosterService() {}
 
+    static boolean shouldRestoreProfile(String config) {
+        BotPersonality p = BotPersonality.parse(config);
+        return p.rosterActive() && !p.rosterRole().isBlank() && p.ownerJobPlan()
+                && BotCareerPlan.forTarget(p.ownerJobGoal()) != null;
+    }
+
     static void start() {
         Thread.ofPlatform().daemon().name("bot-owner-roster-start").start(() -> {
             List<Integer> ids = new ArrayList<>();
@@ -24,9 +30,7 @@ final class BotRosterService {
                                  + "JOIN bot_owners o ON o.bot_char_id=b.bot_char_id ORDER BY b.bot_char_id");
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    BotPersonality p = BotPersonality.parse(rs.getString("config"));
-                    if (!p.rosterRole().isBlank() && p.ownerJobPlan()
-                            && BotCareerPlan.forTarget(p.ownerJobGoal()) != null) ids.add(rs.getInt("bot_char_id"));
+                    if (shouldRestoreProfile(rs.getString("config"))) ids.add(rs.getInt("bot_char_id"));
                 }
             } catch (Exception e) {
                 log.error("Could not load owner bot roster", e);

@@ -250,10 +250,15 @@ A terminal Priest plan stays Priest; Beginner plans never auto-advance.
 The local owner roster is recorded in [docs/bot/rosters/sipsbuddy.csv](docs/bot/rosters/sipsbuddy.csv)
 and its JSON companion. Assigned profiles persist `ownerJobTarget`, `trainingLevel` (0 means
 uncapped farming), and a Base64-encoded `rosterRole`. Roster bots restore as independent
-autopilot characters at boot, retaining their registered owner. Training stops when the target
+autopilot characters at boot, retaining their registered owner. A saved `rosterActive=false`
+keeps a roster character offline across restarts while preserving its role, career plan, and inventory;
+missing flags default to active for existing rosters. Training stops when the target
 is reached after any due job advancement; this does not block incidental XP or implement an XP cap.
 Map status tooltips show assigned roles and training status. Say `recruit SipsBuddy1` to bring an
 independent owned bot back into your companion group using the existing recruitment flow.
+An inactive storage character can be summoned for one session with `@spawnbot SipsBuddy61`;
+this does not change its saved startup preference. Set `rosterActive=true` in its saved profile
+to restore automatic login. SipsBuddy61–100 are parked offline in the recorded roster.
 
 Quest roles use the existing automatic quest system. Market, logistics, and storage roles are
 assignments for manual workflows: the roster does not implement market pricing, player-shop

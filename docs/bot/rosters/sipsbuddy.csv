@@ -59,43 +59,43 @@ SipsBuddy57,market/logistics,Ludibrium materials,Beginner,0,0,0,30,30,True
 SipsBuddy58,market/logistics,Orbis supply mule,Beginner,0,0,0,30,30,True
 SipsBuddy59,market/logistics,Perion / Ellinia supply mule,Beginner,0,0,0,30,30,True
 SipsBuddy60,market/logistics,Transfer and emergency reserves,Beginner,0,0,0,30,30,True
-SipsBuddy61,storage,Warrior weapons,Beginner,0,0,0,10,10,True
-SipsBuddy62,storage,Mage weapons,Beginner,0,0,0,10,10,True
-SipsBuddy63,storage,Thief weapons,Beginner,0,0,0,10,10,True
-SipsBuddy64,storage,Bowman weapons,Beginner,0,0,0,10,10,True
-SipsBuddy65,storage,Pirate weapons,Beginner,0,0,0,10,10,True
-SipsBuddy66,storage,Warrior armor,Beginner,0,0,0,10,10,True
-SipsBuddy67,storage,Mage armor,Beginner,0,0,0,10,10,True
-SipsBuddy68,storage,Thief armor,Beginner,0,0,0,10,10,True
-SipsBuddy69,storage,Bowman armor,Beginner,0,0,0,10,10,True
-SipsBuddy70,storage,Pirate armor,Beginner,0,0,0,10,10,True
-SipsBuddy71,storage,Gloves,Beginner,0,0,0,10,10,True
-SipsBuddy72,storage,Shoes,Beginner,0,0,0,10,10,True
-SipsBuddy73,storage,Capes,Beginner,0,0,0,10,10,True
-SipsBuddy74,storage,Accessories,Beginner,0,0,0,10,10,True
-SipsBuddy75,storage,Rare and high-stat equipment,Beginner,0,0,0,10,10,True
-SipsBuddy76,storage,Glove ATT scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy77,storage,Weapon ATT scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy78,storage,Magic ATT scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy79,storage,Overall armor scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy80,storage,Cape scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy81,storage,Shoe scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy82,storage,Helmet scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy83,storage,Glove stat scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy84,storage,Shield scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy85,storage,Rare and event scrolls,Beginner,0,0,0,10,10,True
-SipsBuddy86,storage,Power crystals,Beginner,0,0,0,10,10,True
-SipsBuddy87,storage,Dark crystals,Beginner,0,0,0,10,10,True
-SipsBuddy88,storage,"Diamond, sapphire, aquamarine",Beginner,0,0,0,10,10,True
-SipsBuddy89,storage,"Emerald, topaz, opal",Beginner,0,0,0,10,10,True
-SipsBuddy90,storage,"Garnet, amethyst, black crystal",Beginner,0,0,0,10,10,True
-SipsBuddy91,storage,Iron and bronze,Beginner,0,0,0,10,10,True
-SipsBuddy92,storage,"Mithril, adamantium, steel",Beginner,0,0,0,10,10,True
-SipsBuddy93,storage,Processed materials,Beginner,0,0,0,10,10,True
-SipsBuddy94,storage,Monster ETC drops,Beginner,0,0,0,10,10,True
-SipsBuddy95,storage,Quest materials,Beginner,0,0,0,10,10,True
-SipsBuddy96,storage,HP potions,Beginner,0,0,0,10,10,True
-SipsBuddy97,storage,MP potions,Beginner,0,0,0,10,10,True
-SipsBuddy98,storage,Elixirs and Power Elixirs,Beginner,0,0,0,10,10,True
-SipsBuddy99,storage,Food and buff consumables,Beginner,0,0,0,10,10,True
-SipsBuddy100,storage,Event items and emergency storage,Beginner,0,0,0,10,10,True
+SipsBuddy61,storage,Warrior weapons,Beginner,0,0,0,10,10,False
+SipsBuddy62,storage,Mage weapons,Beginner,0,0,0,10,10,False
+SipsBuddy63,storage,Thief weapons,Beginner,0,0,0,10,10,False
+SipsBuddy64,storage,Bowman weapons,Beginner,0,0,0,10,10,False
+SipsBuddy65,storage,Pirate weapons,Beginner,0,0,0,10,10,False
+SipsBuddy66,storage,Warrior armor,Beginner,0,0,0,10,10,False
+SipsBuddy67,storage,Mage armor,Beginner,0,0,0,10,10,False
+SipsBuddy68,storage,Thief armor,Beginner,0,0,0,10,10,False
+SipsBuddy69,storage,Bowman armor,Beginner,0,0,0,10,10,False
+SipsBuddy70,storage,Pirate armor,Beginner,0,0,0,10,10,False
+SipsBuddy71,storage,Gloves,Beginner,0,0,0,10,10,False
+SipsBuddy72,storage,Shoes,Beginner,0,0,0,10,10,False
+SipsBuddy73,storage,Capes,Beginner,0,0,0,10,10,False
+SipsBuddy74,storage,Accessories,Beginner,0,0,0,10,10,False
+SipsBuddy75,storage,Rare and high-stat equipment,Beginner,0,0,0,10,10,False
+SipsBuddy76,storage,Glove ATT scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy77,storage,Weapon ATT scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy78,storage,Magic ATT scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy79,storage,Overall armor scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy80,storage,Cape scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy81,storage,Shoe scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy82,storage,Helmet scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy83,storage,Glove stat scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy84,storage,Shield scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy85,storage,Rare and event scrolls,Beginner,0,0,0,10,10,False
+SipsBuddy86,storage,Power crystals,Beginner,0,0,0,10,10,False
+SipsBuddy87,storage,Dark crystals,Beginner,0,0,0,10,10,False
+SipsBuddy88,storage,"Diamond, sapphire, aquamarine",Beginner,0,0,0,10,10,False
+SipsBuddy89,storage,"Emerald, topaz, opal",Beginner,0,0,0,10,10,False
+SipsBuddy90,storage,"Garnet, amethyst, black crystal",Beginner,0,0,0,10,10,False
+SipsBuddy91,storage,Iron and bronze,Beginner,0,0,0,10,10,False
+SipsBuddy92,storage,"Mithril, adamantium, steel",Beginner,0,0,0,10,10,False
+SipsBuddy93,storage,Processed materials,Beginner,0,0,0,10,10,False
+SipsBuddy94,storage,Monster ETC drops,Beginner,0,0,0,10,10,False
+SipsBuddy95,storage,Quest materials,Beginner,0,0,0,10,10,False
+SipsBuddy96,storage,HP potions,Beginner,0,0,0,10,10,False
+SipsBuddy97,storage,MP potions,Beginner,0,0,0,10,10,False
+SipsBuddy98,storage,Elixirs and Power Elixirs,Beginner,0,0,0,10,10,False
+SipsBuddy99,storage,Food and buff consumables,Beginner,0,0,0,10,10,False
+SipsBuddy100,storage,Event items and emergency storage,Beginner,0,0,0,10,10,False

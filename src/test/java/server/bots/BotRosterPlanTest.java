@@ -53,6 +53,31 @@ class BotRosterPlanTest {
     }
 
     @Test
+    void inactiveStorageProfileSurvivesEditsAndIsSkippedAtStartup() {
+        BotPersonality storage = BotPersonality.defaults()
+                .withOwnerCareer(BotCareerPlan.forTarget(Job.BEGINNER), 10, "Mage weapons")
+                .withRosterActive(false);
+        BotPersonality loaded = BotPersonality.parse(storage.serialize());
+        assertFalse(loaded.rosterActive());
+        assertEquals(Job.BEGINNER, loaded.ownerJobGoal());
+        assertEquals(10, loaded.trainingLevelTarget());
+        assertEquals("Mage weapons", loaded.rosterRole());
+        assertFalse(BotRosterService.shouldRestoreProfile(loaded.serialize()));
+        assertFalse(loaded.withPlannedJobs(Job.BEGINNER, Job.BEGINNER).rosterActive());
+        assertFalse(loaded.withOwnerCareer(BotCareerPlan.forTarget(Job.BEGINNER), 10, "Mage weapons").rosterActive());
+        assertTrue(BotRosterService.shouldRestoreProfile(loaded.withRosterActive(true).serialize()));
+    }
+
+    @Test
+    void legacyRosterRestoresWhileOrdinaryProfilesRemainExcluded() {
+        BotPersonality active = BotPersonality.defaults()
+                .withOwnerCareer(BotCareerPlan.forTarget(Job.BISHOP), 0, "Main support");
+        assertTrue(BotRosterService.shouldRestoreProfile(active.serialize().replace(";rosterActive=true", "")));
+        assertFalse(BotRosterService.shouldRestoreProfile(BotPersonality.defaults().serialize()));
+        assertFalse(BotRosterService.shouldRestoreProfile(null));
+    }
+
+    @Test
     void chatSupportsRosterCareersWithoutReadingOrdinaryConversationAsCommands() {
         assertEquals(Job.IL_ARCHMAGE, BotChatManager.matchJobPlan("plan il archmage"));
         assertEquals(Job.PRIEST, BotChatManager.matchJobPlan("plan priest"));

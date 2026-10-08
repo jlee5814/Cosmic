@@ -28,6 +28,13 @@ freeze XP. `BotRosterService` restores opted-in profiles with nonempty `rosterRo
 outside managed population churn, using the existing character load/autopilot path. The
 registered owner is retained; existing `recruit <name>` can reattach an independent bot.
 
+Owner roster activation is saved as `rosterActive` (missing = true for backwards compatibility).
+`BotRosterService.shouldRestoreProfile` skips inactive profiles at boot without clearing roles,
+career plans, or training targets. Personality copies and serialization preserve the flag.
+Manual `@spawnbot <name>` may summon an inactive character for one session without changing
+its startup preference. SipsBuddy61–100 are parked with `rosterActive=false` in the saved profiles;
+the roster CSV/JSON `active` fields mirror that choice.
+
 **Routing now covers ALL explorer tiers**, keyed by branch = `id/100` (1..5) and tier = `id%10` (0=1st/2nd, 1=3rd, 2=4th); within tier 0, `id%100==0` is 1st job and the rest are 2nd. Four SSOT tables in `BotStarterKitManager`, all verified vs Map.wz life data + handbook/NPC.txt. `jobChangeNpcFor(Job)` switches on tier (and 1st-vs-2nd within tier 0); `routesThroughNpc(j) = jobChangeNpcFor(j)!=null`.
 
 1st job — `FIRST_JOB_NPC` (town instructor):

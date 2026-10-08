@@ -34,12 +34,24 @@ public record BotPersonality(
         boolean ownerJobPlan,       // owner explicitly delegated advancement along the saved job tree
         int ownerJobTargetId,       // terminal job; -1 reads the legacy Bishop plan
         int trainingLevelTarget,   // 0 = keep farming; otherwise stop training once reached
-        String rosterRole          // nonempty = owner roster, restored online at server boot
+        String rosterRole,         // nonempty = owner roster
+        boolean rosterActive       // restore this owner roster character at server boot
 ) {
     /** Career arc: how long a bot stays interested before it "leaves". HARDCORE never retires (capped count). */
     public enum Archetype { TOURIST, CASUAL, REGULAR, HARDCORE }
 
     public static final int HARDCORE_FOREVER = Integer.MAX_VALUE;
+
+    public BotPersonality(long seed, double daysActiveRatio, int[] hourWeights, int sessionLenMeanMin,
+                          double farmIdleRatio, double breakFreqPerHour, int breakLenMeanMin,
+                          double sociability, double chattiness, double riskTolerance, Archetype career,
+                          int careerLenDays, int plannedFirstJobId, int plannedSecondJobId, boolean ownerJobPlan,
+                          int ownerJobTargetId, int trainingLevelTarget, String rosterRole) {
+        this(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio, breakFreqPerHour,
+                breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
+                plannedFirstJobId, plannedSecondJobId, ownerJobPlan, ownerJobTargetId, trainingLevelTarget,
+                rosterRole, true);
+    }
 
     public BotPersonality(long seed, double daysActiveRatio, int[] hourWeights, int sessionLenMeanMin,
                           double farmIdleRatio, double breakFreqPerHour, int breakLenMeanMin,
@@ -121,7 +133,7 @@ public record BotPersonality(
         return new BotPersonality(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio,
                 breakFreqPerHour, breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
                 first == null ? 0 : first.getId(), second == null ? 0 : second.getId(), ownerJobPlan,
-                ownerJobTargetId, trainingLevelTarget, rosterRole);
+                ownerJobTargetId, trainingLevelTarget, rosterRole, rosterActive);
     }
 
     public BotPersonality withOwnerPlannedJobs(client.Job first, client.Job second) {
@@ -134,7 +146,14 @@ public record BotPersonality(
         return new BotPersonality(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio,
                 breakFreqPerHour, breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
                 plan.first() == null ? 0 : plan.first().getId(), plan.second() == null ? 0 : plan.second().getId(),
-                true, plan.goal().getId(), Math.max(0, targetLevel), role);
+                true, plan.goal().getId(), Math.max(0, targetLevel), role, rosterActive);
+    }
+
+    BotPersonality withRosterActive(boolean active) {
+        return new BotPersonality(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio,
+                breakFreqPerHour, breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
+                plannedFirstJobId, plannedSecondJobId, ownerJobPlan, ownerJobTargetId, trainingLevelTarget,
+                rosterRole, active);
     }
 
     client.Job ownerJobGoal() {
@@ -325,7 +344,8 @@ public record BotPersonality(
                 + ";ownerJobTarget=" + ownerJobTargetId
                 + ";trainingLevel=" + trainingLevelTarget
                 + ";rosterRole=" + java.util.Base64.getUrlEncoder().withoutPadding()
-                    .encodeToString(rosterRole.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    .encodeToString(rosterRole.getBytes(java.nio.charset.StandardCharsets.UTF_8))
+                + ";rosterActive=" + rosterActive;
     }
 
     /** Parse a saved blob; any missing/garbled field falls back to {@link #defaults()} (forward-compatible). */
@@ -340,6 +360,7 @@ public record BotPersonality(
         int sess = d.sessionLenMeanMin, blen = d.breakLenMeanMin, clen = d.careerLenDays;
         int pj1 = d.plannedFirstJobId, pj2 = d.plannedSecondJobId;
         boolean ownerJobPlan = false;
+        boolean rosterActive = true;
         int ownerJobTarget = -1, trainingLevel = 0;
         String rosterRole = "";
         int[] hours = d.hourWeights;
@@ -368,6 +389,7 @@ public record BotPersonality(
                     case "ownerJobPlan" -> ownerJobPlan = Boolean.parseBoolean(v);
                     case "ownerJobTarget" -> ownerJobTarget = Integer.parseInt(v);
                     case "trainingLevel" -> trainingLevel = Math.max(0, Integer.parseInt(v));
+                    case "rosterActive" -> rosterActive = Boolean.parseBoolean(v);
                     case "rosterRole" -> rosterRole = new String(java.util.Base64.getUrlDecoder().decode(v),
                             java.nio.charset.StandardCharsets.UTF_8);
                     default -> { /* unknown key: ignore (forward-compat) */ }
@@ -377,7 +399,7 @@ public record BotPersonality(
             }
         }
         return new BotPersonality(seed, days, hours, sess, farm, bfreq, blen, soc, chat, risk, career, clen,
-                pj1, pj2, ownerJobPlan, ownerJobTarget, trainingLevel, rosterRole);
+                pj1, pj2, ownerJobPlan, ownerJobTarget, trainingLevel, rosterRole, rosterActive);
     }
 
     private static int[] parseHours(String v, int[] fallback) {
