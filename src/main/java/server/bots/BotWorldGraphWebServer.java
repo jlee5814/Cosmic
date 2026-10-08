@@ -1123,6 +1123,11 @@ public final class BotWorldGraphWebServer {
                     .append(",\"n\":").append(jsonStr(chr.getName()))
                     .append(",\"map\":").append(chr.getMapId())
                     .append(",\"lvl\":").append(chr.getLevel())
+                    .append(",\"plannedJob\":").append(jsonStr(e.personality.ownerJobGoal() == null ? ""
+                            : e.personality.ownerJobGoal().name()))
+                    .append(",\"trainingTarget\":").append(e.personality.trainingLevelTarget())
+                    .append(",\"role\":").append(jsonStr(e.personality.rosterRole()))
+                    .append(",\"trainingComplete\":").append(BotTrainingPlan.complete(e, chr))
                     .append(",\"party\":").append(Math.max(0, chr.getPartyId()))
                     .append(",\"crew\":").append(e.crewGroupId != null ? e.crewGroupId : 0)
                     .append(",\"owner\":").append(jsonStr(owner))

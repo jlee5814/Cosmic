@@ -738,6 +738,13 @@ public class BotChatManager {
     static void handleChat(BotEntry entry, String message) {
         LAST_CHAT_HANDLED.set(true);
         markOwnerActive(entry);
+        if (isJobPlanCommand(message)) {
+            Job goal = matchJobPlan(message);
+            BotManager.getInstance().botReply(entry, goal == null
+                    ? "try plan bishop, plan il archmage, plan priest, plan spearman, plan assassin, plan bandit, or plan beginner"
+                    : BotBuildManager.setOwnerJobPlan(entry, goal));
+            return; // future plan must not fall through into the immediate job-selection parser
+        }
         // Logout / relog — two-step confirmation
         if (entry.pendingAction == null && matchesWholeCommand(RELOG_PATTERN, message)) {
             BotManager.after(BotManager.randMs(900, 1100), () -> {
@@ -2468,6 +2475,20 @@ public class BotChatManager {
                 && left.primaryStat == right.primaryStat
                 && left.secondaryStat == right.secondaryStat
                 && left.secondaryTarget == right.secondaryTarget;
+    }
+
+    static boolean isBishopPlanCommand(String message) {
+        return matchJobPlan(message) == Job.BISHOP;
+    }
+
+    private static boolean isJobPlanCommand(String message) {
+        return message != null && normalizeCommandText(message.toLowerCase(Locale.ROOT)).startsWith("plan ");
+    }
+
+    static Job matchJobPlan(String message) {
+        if (!isJobPlanCommand(message)) return null;
+        String normalized = normalizeCommandText(message.toLowerCase(Locale.ROOT));
+        return BotCareerPlan.parseTarget(normalized.substring(5));
     }
 
     private static boolean matchesWholeCommand(Pattern pattern, String message) {

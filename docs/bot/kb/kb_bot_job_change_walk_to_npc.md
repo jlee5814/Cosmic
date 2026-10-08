@@ -9,6 +9,25 @@ metadata:
 
 Autopilot/ownerless bots no longer change job instantly-anywhere — they walk to a verified instructor NPC, then advance on arrival, with grinding suppressed en route (anti-overlevel). Original 1st/2nd commit `4d727c000`; 3rd/4th tiers + fallback config added later (experimental branch).
 
+**Owner-delegated Bishop career:** normal chat `SipsBuddy1 plan bishop` targets one companion;
+`plan bishop` broadcasts to all active owned companions. `BotBuildManager.setBishopPlan` saves
+Magician/Cleric through `BotPersonality` + `BotConfigService`, with an explicit `ownerJobPlan`
+flag so legacy creation-time plans do not silently bypass owner prompts. Save failures leave the
+runtime plan unchanged. The common level-up check reconciles the plan even without a level change
+(relog/errand interruption), honors 8/30/70/120 via `autoAdvanceTarget`, and schedules only one
+pending advance per entry. It reuses the same instructor/advance flow as other bot job changes;
+supervised companions advance through the existing owner-chat flow. Already-incompatible jobs and
+lifelong Beginners are rejected. A plan supersedes earlier autonomous choice errands/callbacks.
+
+Owner plans now store a terminal `ownerJobTarget` (legacy Bishop records remain compatible).
+`BotCareerPlan` derives paths from the existing `BotStarterKitManager` explorer topology, so
+Priest/Spearman/Assassin/Bandit can remain terminal careers and Beginner mules never auto-advance.
+`BotTrainingPlan` stops farming at a saved `trainingLevel` (0 = uncapped) after any overdue job
+advance; start callbacks and inert-autopilot recovery honor the same condition. It does not
+freeze XP. `BotRosterService` restores opted-in profiles with nonempty `rosterRole` at boot,
+outside managed population churn, using the existing character load/autopilot path. The
+registered owner is retained; existing `recruit <name>` can reattach an independent bot.
+
 **Routing now covers ALL explorer tiers**, keyed by branch = `id/100` (1..5) and tier = `id%10` (0=1st/2nd, 1=3rd, 2=4th); within tier 0, `id%100==0` is 1st job and the rest are 2nd. Four SSOT tables in `BotStarterKitManager`, all verified vs Map.wz life data + handbook/NPC.txt. `jobChangeNpcFor(Job)` switches on tier (and 1st-vs-2nd within tier 0); `routesThroughNpc(j) = jobChangeNpcFor(j)!=null`.
 
 1st job — `FIRST_JOB_NPC` (town instructor):

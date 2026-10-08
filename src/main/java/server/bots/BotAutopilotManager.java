@@ -425,12 +425,16 @@ final class BotAutopilotManager {
         if (entry == null || bot == null || bot.getMap() == null) {
             return;
         }
+        if (BotTrainingPlan.complete(entry, bot)) {
+            BotTrainingPlan.stopIfComplete(entry, bot);
+            return;
+        }
         int epoch = entry.activityEpoch;
         boolean ferryApprovedBefore = entry.autopilotFerryApproved;
         decisionRunner.run(() -> decide(entry, bot), result -> {
             Decision decision = (Decision) result;
             Recommendation rec = decision != null ? decision.rec() : null;
-            if (entry.activityEpoch != epoch || bot.getMap() == null) {
+            if (entry.activityEpoch != epoch || bot.getMap() == null || BotTrainingPlan.complete(entry, bot)) {
                 return; // a newer owner directive won while we were thinking
             }
             if (rec == null) {
@@ -675,6 +679,10 @@ final class BotAutopilotManager {
      * grind/combat flow.
      */
     static boolean tick(BotEntry entry, Character bot, boolean runAiTick) {
+        if (BotTrainingPlan.complete(entry, bot)) {
+            BotTrainingPlan.stopIfComplete(entry, bot);
+            return true;
+        }
         if (!isActive(entry) || bot.getMap() == null) {
             return false;
         }
@@ -1053,6 +1061,16 @@ final class BotAutopilotManager {
     }
 
     static String statusReport(BotEntry entry, Character bot) {
+        String status = activityStatusReport(entry, bot);
+        if (entry == null || bot == null || entry.personality.rosterRole().isBlank()) return status;
+        BotPersonality p = entry.personality;
+        String training = p.trainingLevelTarget() == 0 ? "uncapped farming"
+                : BotTrainingPlan.complete(entry, bot) ? "training target reached"
+                : "training to lv" + p.trainingLevelTarget();
+        return "assigned: " + p.rosterRole() + "; " + training + "; " + status;
+    }
+
+    private static String activityStatusReport(BotEntry entry, Character bot) {
         String currentMap = currentMapName(bot);
         if (entry == null || bot == null) {
             return "not sure where i am rn";

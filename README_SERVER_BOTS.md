@@ -236,6 +236,31 @@ Verbs: `trade [me] <type/name>`, `give [me] <type/name>`, `drop <type/name>`, `p
 
 ### Build & Job
 
+Say `SipsBuddy1 plan bishop` in ordinary map chat to save that companion's future
+Magician (level 8) → Cleric (30) → Priest (70) → Bishop (120) path. Say `plan bishop`
+without a bot name to apply it to all your active companions. The plan survives relogs
+and server restarts and advances automatically without further job-choice replies.
+Autopilot bots visit their instructors; supervised companions use the normal chat
+advancement flow. Bots already on another job branch cannot switch through this command.
+
+Saved plans also accept terminal explorer jobs: `plan il archmage`, `plan priest`,
+`plan cleric`, `plan spearman`, `plan assassin`, `plan bandit`, or `plan beginner`.
+A terminal Priest plan stays Priest; Beginner plans never auto-advance.
+
+The local owner roster is recorded in [docs/bot/rosters/sipsbuddy.csv](docs/bot/rosters/sipsbuddy.csv)
+and its JSON companion. Assigned profiles persist `ownerJobTarget`, `trainingLevel` (0 means
+uncapped farming), and a Base64-encoded `rosterRole`. Roster bots restore as independent
+autopilot characters at boot, retaining their registered owner. Training stops when the target
+is reached after any due job advancement; this does not block incidental XP or implement an XP cap.
+Map status tooltips show assigned roles and training status. Say `recruit SipsBuddy1` to bring an
+independent owned bot back into your companion group using the existing recruitment flow.
+
+Quest roles use the existing automatic quest system. Market, logistics, and storage roles are
+assignments for manual workflows: the roster does not implement market pricing, player-shop
+sales, cross-character inventory sorting, or a profitable quest route. Skills such as Genesis
+and Blizzard still require their ordinary skill unlocks/mastery; a class assignment alone does
+not unlock them.
+
 | Say                                       | Effect                  |
 |-------------------------------------------|-------------------------|
 | `respec sp` / `reset skills` / `reset sp` | Refund and re-assign SP |
@@ -260,7 +285,10 @@ Verbs: `trade [me] <type/name>`, `give [me] <type/name>`, `drop <type/name>`, `p
 ### Living-server population (`@botpop`)
 
 A background scheduler can keep a population of **server-generated** bots logging in and out on their
-own, on varying per-bot schedules, so the world feels alive. It is **OFF by default**.
+own, on varying per-bot schedules, so the world feels alive. The scheduler starts enabled with a
+**0× background population target**. Saved owner rosters restore independently. Use `@botpop 1`
+to add background bots at the normal hourly curve, or `@botpop 0` to bring that target back to zero.
+Runtime multiplier changes reset to the startup default on restart; character progress stays in the database.
 
 **IMPORTANT — only `@spawnbot generate` bots and auto-generated bots are managed.** The scheduler will only ever spawn/retire. Bots you made with a name (`@spawnbot <name>`), `@botme`, or
 `@registerbot` are **never** auto-scheduled — this is the safety rule that stops it from ever spawning a
@@ -270,6 +298,7 @@ they aren't in the managed pool.)
 | Command | Effect |
 |---|---|
 | `@botpop` / `@botpop status` | Status |
+| `@botpop <multiplier>` | Set the background population target scale live; 0 means no new background logins |
 | `@botpop on` / `@botpop off` | Toggle auto spawning bots |
 | `@botpop list` | List managed bots (id, group, active/retired/disabled, online) |
 | `@botpop sweep` | Force one reconcile pass now (instead of waiting for the next tick) |
@@ -313,4 +342,3 @@ Bots can hold short casual conversations with the owner using a tiny local model
 ### Behavior
 - LLM only fires when a message is **directly addressed** to a specific bot by name (`Jason hi`, `Leroy how are you`).
 - Bots remember the last few recent chat turns in memory for short context. Persistent disk memory is off by default for speed; set `BotLlmConfig.memoryEnabled = true` if bots should remember conversations across restarts.
-

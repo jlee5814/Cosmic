@@ -172,9 +172,8 @@ public class BotManager {
         public int PARTY_LEECH_GAP_RELEASE = 2;
         public boolean PARTY_LEECH_ENABLED = true;
 
-        // Living-server population scheduler (BotScheduler). DEFAULT OFF — it auto logs managed bots
-        // in/out (and, when enabled, auto-generates fresh ones) to track a target online-count curve,
-        // so a server start never silently spawns a crowd. Enable via @botpop or by flipping this.
+        // Living-server population scheduler (BotScheduler). Enabled with a zero population target:
+        // owner rosters restore independently, while background bots require @botpop <multiplier>.
         public boolean POPULATION_SCHED_ENABLED = true;
         public long POPULATION_SWEEP_MS = 60_000L;         // reconcile cadence
         public int POPULATION_WORLD = 0;                   // world/channel scheduled bots spawn into
@@ -185,7 +184,7 @@ public class BotManager {
                 19, 20, 21, 21, 20, 18, 16, 15, 13, 10, 10, 10 // 12-23
         };
         public int POPULATION_NOISE = 2;                   // +/- jitter on the hourly target
-        public double POPULATION_MULTIPLIER = 10.0;        // scales the whole online target up/down, so bot
+        public double POPULATION_MULTIPLIER = 0.0;         // scales the whole online target up/down, so bot
                                                            // count is adjustable without editing the curve/noise
         public boolean CHILL_SESSION_ENABLED = true;       // bots can "log in to chill": spend a half-length
                                                            // session lingering in town instead of grinding
@@ -766,6 +765,7 @@ public class BotManager {
     }
 
     private void startTakeoverAutopilot(BotEntry entry, Character botChar) {
+        if (BotTrainingPlan.complete(entry, botChar)) return;
         List<BotEntry> partyBots = partyBotEntries(botChar);
         boolean partyOfBots = partyBots.size() >= 2 && onlinePartyMembersAllBots(botChar);
         botSay(botChar, randomReply(List.of(
@@ -893,6 +893,7 @@ public class BotManager {
         entry.movementProfile = BotMovementProfile.fromCharacter(bot);
         entry.selfScrollEnabled = BotPrefsStore.loadSelfScroll(bot.getId());
         entry.personality = BotPersonality.loadOrCreate(botCharId);
+        if (!entry.personality.rosterRole().isBlank()) entry.apAuto = true;
         BotNavigationGraphProvider.warmGraphAsync(bot.getMap(), entry.movementProfile);
         maybeStartGraphEvictionSweep();
         // Global dedup + atomic publish: a bot character has exactly one runtime owner. Remove any prior
@@ -5581,6 +5582,7 @@ public class BotManager {
      * resets it to nextDecisionAt() the moment a plan installs.
      */
     private void maybeRecoverInertAutopilot(BotEntry entry, Character bot) {
+        if (BotTrainingPlan.complete(entry, bot)) return; // intentional training stop survives idle recovery
         if (entry.operatorCmd != null || isAdminFollowActive(entry)) {
             return; // an operator command (IDLE/FIDGET) or an admin hijack-follow deliberately holds the bot off autopilot
         }

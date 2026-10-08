@@ -82,6 +82,8 @@ which reports the region you're standing on using your own movement profile.
 
 ### `/api/botdebug[?id=<botCharId>]`
 Read-only per-bot autopilot internals for live debugging (party cohesion, follow, travel). No cache.
+Every row also includes `plannedJob` (terminal owner career goal, or empty), `trainingTarget`
+(0 means uncapped farming), `role` (assigned owner roster role), and `trainingComplete`.
 `?id=` filters to one bot and adds a `detail` block (live stats + learned skills). **Read this over a DB
 `skills`/`characters` query** — the in-memory `Character` is the SSOT; the DB row lags until the next save.
 ```

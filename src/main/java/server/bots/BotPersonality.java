@@ -30,12 +30,34 @@ public record BotPersonality(
         Archetype career,
         int careerLenDays,          // career length before retiring; Integer.MAX_VALUE = hardcore (never)
         int plannedFirstJobId,      // chosen-at-creation 1st job (0 = none -> autopilot picks at lv10)
-        int plannedSecondJobId      // chosen-at-creation 2nd job (0 = none -> autopilot picks at lv30)
+        int plannedSecondJobId,     // chosen-at-creation 2nd job (0 = none -> autopilot picks at lv30)
+        boolean ownerJobPlan,       // owner explicitly delegated advancement along the saved job tree
+        int ownerJobTargetId,       // terminal job; -1 reads the legacy Bishop plan
+        int trainingLevelTarget,   // 0 = keep farming; otherwise stop training once reached
+        String rosterRole          // nonempty = owner roster, restored online at server boot
 ) {
     /** Career arc: how long a bot stays interested before it "leaves". HARDCORE never retires (capped count). */
     public enum Archetype { TOURIST, CASUAL, REGULAR, HARDCORE }
 
     public static final int HARDCORE_FOREVER = Integer.MAX_VALUE;
+
+    public BotPersonality(long seed, double daysActiveRatio, int[] hourWeights, int sessionLenMeanMin,
+                          double farmIdleRatio, double breakFreqPerHour, int breakLenMeanMin,
+                          double sociability, double chattiness, double riskTolerance, Archetype career,
+                          int careerLenDays, int plannedFirstJobId, int plannedSecondJobId, boolean ownerJobPlan) {
+        this(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio, breakFreqPerHour,
+                breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
+                plannedFirstJobId, plannedSecondJobId, ownerJobPlan, -1, 0, "");
+    }
+
+    public BotPersonality(long seed, double daysActiveRatio, int[] hourWeights, int sessionLenMeanMin,
+                          double farmIdleRatio, double breakFreqPerHour, int breakLenMeanMin,
+                          double sociability, double chattiness, double riskTolerance, Archetype career,
+                          int careerLenDays, int plannedFirstJobId, int plannedSecondJobId) {
+        this(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio, breakFreqPerHour,
+                breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
+                plannedFirstJobId, plannedSecondJobId, false);
+    }
 
     /**
      * Resolve a bot's personality at spawn: parse the saved {@code bot_config} blob if present; else,
@@ -98,7 +120,28 @@ public record BotPersonality(
     public BotPersonality withPlannedJobs(client.Job first, client.Job second) {
         return new BotPersonality(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio,
                 breakFreqPerHour, breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
-                first == null ? 0 : first.getId(), second == null ? 0 : second.getId());
+                first == null ? 0 : first.getId(), second == null ? 0 : second.getId(), ownerJobPlan,
+                ownerJobTargetId, trainingLevelTarget, rosterRole);
+    }
+
+    public BotPersonality withOwnerPlannedJobs(client.Job first, client.Job second) {
+        client.Job third = BotStarterKitManager.thirdJobOf(second);
+        client.Job goal = third == null ? second : BotStarterKitManager.fourthJobOf(third);
+        return withOwnerCareer(BotCareerPlan.forTarget(goal), trainingLevelTarget, rosterRole);
+    }
+
+    BotPersonality withOwnerCareer(BotCareerPlan plan, int targetLevel, String role) {
+        return new BotPersonality(seed, daysActiveRatio, hourWeights, sessionLenMeanMin, farmIdleRatio,
+                breakFreqPerHour, breakLenMeanMin, sociability, chattiness, riskTolerance, career, careerLenDays,
+                plan.first() == null ? 0 : plan.first().getId(), plan.second() == null ? 0 : plan.second().getId(),
+                true, plan.goal().getId(), Math.max(0, targetLevel), role);
+    }
+
+    client.Job ownerJobGoal() {
+        if (ownerJobTargetId >= 0) return client.Job.getById(ownerJobTargetId);
+        // Existing saved `plan bishop` records predate terminal goals.
+        return plannedFirstJobId == client.Job.MAGICIAN.getId() && plannedSecondJobId == client.Job.CLERIC.getId()
+                ? client.Job.BISHOP : null;
     }
 
     /** The planned 1st job, or null if unplanned. */
@@ -277,7 +320,12 @@ public record BotPersonality(
                 + ";career=" + career.name()
                 + ";clen=" + careerLenDays
                 + ";pj1=" + plannedFirstJobId
-                + ";pj2=" + plannedSecondJobId;
+                + ";pj2=" + plannedSecondJobId
+                + ";ownerJobPlan=" + ownerJobPlan
+                + ";ownerJobTarget=" + ownerJobTargetId
+                + ";trainingLevel=" + trainingLevelTarget
+                + ";rosterRole=" + java.util.Base64.getUrlEncoder().withoutPadding()
+                    .encodeToString(rosterRole.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     /** Parse a saved blob; any missing/garbled field falls back to {@link #defaults()} (forward-compatible). */
@@ -291,6 +339,9 @@ public record BotPersonality(
         double soc = d.sociability, chat = d.chattiness, risk = d.riskTolerance;
         int sess = d.sessionLenMeanMin, blen = d.breakLenMeanMin, clen = d.careerLenDays;
         int pj1 = d.plannedFirstJobId, pj2 = d.plannedSecondJobId;
+        boolean ownerJobPlan = false;
+        int ownerJobTarget = -1, trainingLevel = 0;
+        String rosterRole = "";
         int[] hours = d.hourWeights;
         Archetype career = d.career;
         for (String part : blob.split(";")) {
@@ -314,13 +365,19 @@ public record BotPersonality(
                     case "clen" -> clen = Integer.parseInt(v);
                     case "pj1" -> pj1 = Integer.parseInt(v);
                     case "pj2" -> pj2 = Integer.parseInt(v);
+                    case "ownerJobPlan" -> ownerJobPlan = Boolean.parseBoolean(v);
+                    case "ownerJobTarget" -> ownerJobTarget = Integer.parseInt(v);
+                    case "trainingLevel" -> trainingLevel = Math.max(0, Integer.parseInt(v));
+                    case "rosterRole" -> rosterRole = new String(java.util.Base64.getUrlDecoder().decode(v),
+                            java.nio.charset.StandardCharsets.UTF_8);
                     default -> { /* unknown key: ignore (forward-compat) */ }
                 }
             } catch (RuntimeException ignored) {
                 // keep the default for this field
             }
         }
-        return new BotPersonality(seed, days, hours, sess, farm, bfreq, blen, soc, chat, risk, career, clen, pj1, pj2);
+        return new BotPersonality(seed, days, hours, sess, farm, bfreq, blen, soc, chat, risk, career, clen,
+                pj1, pj2, ownerJobPlan, ownerJobTarget, trainingLevel, rosterRole);
     }
 
     private static int[] parseHours(String v, int[] fallback) {

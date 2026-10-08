@@ -387,7 +387,7 @@ class BotBuildManager {
         // Undecided base Rogue. A SUPERVISED bot leaves the variant null so the owner picks the weapon
         // line (buildSpVariantPrompt) — the build splits at 1st job and that pick is authoritative.
         // Only an ownerless bot self-resolves: its planned 2nd job, else a 50/50 roll.
-        if (!isOwnerless(entry)) {
+        if (!isOwnerless(entry) && !hasOwnerJobPlan(entry)) {
             return;
         }
         BotPersonality p = entry.personality;
@@ -463,7 +463,7 @@ class BotBuildManager {
         // Undecided base Pirate. A SUPERVISED bot leaves the variant null so the owner picks the weapon
         // line (buildSpVariantPrompt) — the build splits at 1st job and that pick is authoritative.
         // Only an ownerless bot self-resolves: its planned 2nd job, else a 50/50 roll.
-        if (!isOwnerless(entry)) {
+        if (!isOwnerless(entry) && !hasOwnerJobPlan(entry)) {
             return;
         }
         BotPersonality p = entry.personality;
@@ -842,6 +842,8 @@ class BotBuildManager {
      * Detects level-up and sends prompts before spending SP/AP so gating can apply.
      */
     static void checkLevelUp(BotEntry entry, Character bot) {
+        maybeAdvanceOwnerJobPlan(entry, bot); // also reconcile saved plans after a relog or interrupted errand
+        BotTrainingPlan.stopIfComplete(entry, bot);
         int lvl = bot.getLevel();
         if (entry.lastKnownLevel == lvl) return;
 
@@ -868,7 +870,7 @@ class BotBuildManager {
 
         int milestoneFloor = lvl >= 120 ? 120 : lvl >= 70 ? 70 : lvl >= 30 ? 30 : lvl >= 10 ? 10 : lvl >= 8 ? 8 : 0;
         if (milestoneFloor > 0 && entry.jobPromptSent < milestoneFloor) {
-            if (!BotManager.isAutopilotActive(entry)) {
+            if (!BotManager.isAutopilotActive(entry) && !hasOwnerJobPlan(entry)) {
                 BotManager.getInstance().issueFollowOwner(entry);
             }
             BotChatManager.checkBotStatus(entry, bot);
@@ -909,17 +911,76 @@ class BotBuildManager {
      *  delay (mirrors the owner-typed advance path in BotChatManager). Reuses the job-advance SSOT
      *  BotStarterKitManager.advanceJob (changeJob + handleJobAdvance award SP/AP); no quest. */
     private static void scheduleAutoAdvance(BotEntry entry, Job target) {
+        BotManager.after(BotManager.randMs(900, 1100), () -> applyAutoAdvance(entry, target));
+    }
+
+    private static void applyAutoAdvance(BotEntry entry, Job target) {
+        if (hasOwnerJobPlan(entry) && autoAdvanceTarget(entry, entry.bot) != target) {
+            return; // an earlier autonomous choice was superseded by the owner's saved plan
+        }
+        if (entry.jobErrandMapId != -1) {
+            return; // the per-tick reconciliation already started this errand — don't double-begin
+        }
+        // Autopilot walks to the instructor; supervised companions use the owner-chat advancement flow.
+        if (BotStarterKitManager.jobChangeNpcFor(target) != null && BotAutopilotManager.isActive(entry)) {
+            BotStarterKitManager.beginJobErrand(entry, target);
+        } else {
+            BotStarterKitManager.advanceJob(entry, target);
+        }
+    }
+
+    static boolean hasOwnerJobPlan(BotEntry entry) {
+        BotPersonality p = entry.personality;
+        return p != null && p.ownerJobPlan() && BotCareerPlan.forTarget(p.ownerJobGoal()) != null;
+    }
+
+    static String setBishopPlan(BotEntry entry) {
+        return setOwnerJobPlan(entry, Job.BISHOP);
+    }
+
+    static String setOwnerJobPlan(BotEntry entry, Job goal) {
+        Job job = entry.bot.getJob();
+        BotCareerPlan plan = BotCareerPlan.forTarget(goal);
+        if (plan == null || !plan.path().contains(job)) {
+            return "i'm already on another job path; can't plan that job";
+        }
+        if (lockedBeginner(entry)) {
+            return "i'm a lifelong beginner; can't plan a job advancement";
+        }
+        BotPersonality updated = entry.personality.withOwnerCareer(plan,
+                entry.personality.trainingLevelTarget(), entry.personality.rosterRole());
+        try {
+            BotConfigService.getInstance().save(entry.bot.getId(), updated.serialize());
+        } catch (RuntimeException e) {
+            return "couldn't save my job plan; please try again";
+        }
+        entry.personality = updated; // acknowledge a durable plan only after persistence succeeds
+        if (entry.jobErrandMapId != -1 && entry.jobErrandTarget != autoAdvanceTarget(entry, entry.bot)) {
+            BotStarterKitManager.clearJobErrand(entry);
+        }
+        maybeAdvanceOwnerJobPlan(entry, entry.bot);
+        return "saved! i'll follow the path to " + goal.name().toLowerCase(java.util.Locale.ROOT)
+                .replace('_', ' ') + " at the required levels";
+    }
+
+    static void maybeAdvanceOwnerJobPlan(BotEntry entry, Character bot) {
+        if (!hasOwnerJobPlan(entry)) return;
+        Job target = autoAdvanceTarget(entry, bot);
+        if (target == null) return;
+        synchronized (entry) {
+            if (entry.plannedJobAdvancePending || entry.jobErrandMapId != -1) return;
+            entry.plannedJobAdvancePending = true;
+        }
         BotManager.after(BotManager.randMs(900, 1100), () -> {
-            if (entry.jobErrandMapId != -1) {
-                return; // the per-tick reconciliation already started this errand — don't double-begin
-            }
-            // Every explorer job on autopilot: walk to the job instructor first (advances on arrival),
-            // so the bot is physically present and doesn't grind/over-level en route. Supervised/
-            // owner-following bots (and any unrouted target) advance instantly.
-            if (BotStarterKitManager.jobChangeNpcFor(target) != null && BotAutopilotManager.isActive(entry)) {
-                BotStarterKitManager.beginJobErrand(entry, target);
-            } else {
-                BotStarterKitManager.advanceJob(entry, target);
+            try {
+                // An owner may have advanced the bot manually during the delay.
+                if (hasOwnerJobPlan(entry) && autoAdvanceTarget(entry, bot) == target) {
+                    applyAutoAdvance(entry, target);
+                }
+            } finally {
+                synchronized (entry) {
+                    entry.plannedJobAdvancePending = false;
+                }
             }
         });
     }
@@ -930,6 +991,11 @@ class BotBuildManager {
     static Job autoAdvanceTarget(BotEntry entry, Character bot) {
         if (lockedBeginner(entry)) {
             return null; // lifelong Beginner: never auto-advance
+        }
+        if (hasOwnerJobPlan(entry)) {
+            Job target = BotCareerPlan.forTarget(entry.personality.ownerJobGoal()).next(bot.getJob());
+            int minLevel = target == Job.MAGICIAN ? 8 : passedMilestoneForJob(target);
+            return target != null && bot.getLevel() >= minLevel ? target : null;
         }
         int lvl = bot.getLevel();
         Job job = bot.getJob();
@@ -970,6 +1036,10 @@ class BotBuildManager {
      * still owns.
      */
     static void maybeStartOverdueJobAdvance(BotEntry entry, Character bot) {
+        if (hasOwnerJobPlan(entry)) {
+            maybeAdvanceOwnerJobPlan(entry, bot);
+            return;
+        }
         if (!BotManager.isAutopilotActive(entry)) {
             return;
         }
@@ -1039,6 +1109,10 @@ class BotBuildManager {
 
     /** Returns the next job-advancement prompt, or null if none is pending. */
     static JobPrompt buildJobPrompt(BotEntry entry, Character bot) {
+        if (hasOwnerJobPlan(entry)) {
+            maybeAdvanceOwnerJobPlan(entry, bot);
+            return null; // the owner already chose the path; never park to ask again
+        }
         if (lockedBeginner(entry)) {
             return null; // lifelong Beginner: never prompt to advance
         }

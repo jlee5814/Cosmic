@@ -1,0 +1,101 @@
+name,tier,role,job,goal_job_id,first_job_id,second_job_id,level_target,training_stop_level,active
+SipsBuddy1,main,"Main farmer, Blizzard, map clearing",Ice/Lightning Arch Mage,222,200,220,120+,0,True
+SipsBuddy2,main,"Holy Symbol, Genesis, support",Bishop,232,200,230,120+,0,True
+SipsBuddy3,main,Second Holy Symbol support character,Priest,231,200,230,81,81,True
+SipsBuddy4,cleric quests,Quest farmer A01,Cleric,230,200,230,35,35,True
+SipsBuddy5,cleric quests,Quest farmer A02,Cleric,230,200,230,35,35,True
+SipsBuddy6,cleric quests,Quest farmer A03,Cleric,230,200,230,35,35,True
+SipsBuddy7,cleric quests,Quest farmer A04,Cleric,230,200,230,35,35,True
+SipsBuddy8,cleric quests,Quest farmer A05,Cleric,230,200,230,35,35,True
+SipsBuddy9,cleric quests,Quest farmer A06,Cleric,230,200,230,35,35,True
+SipsBuddy10,cleric quests,Quest farmer A07,Cleric,230,200,230,35,35,True
+SipsBuddy11,cleric quests,Quest farmer A08,Cleric,230,200,230,35,35,True
+SipsBuddy12,cleric quests,Quest farmer A09,Cleric,230,200,230,35,35,True
+SipsBuddy13,cleric quests,Quest farmer A10,Cleric,230,200,230,35,35,True
+SipsBuddy14,cleric quests,Quest farmer A11,Cleric,230,200,230,35,35,True
+SipsBuddy15,cleric quests,Quest farmer A12,Cleric,230,200,230,35,35,True
+SipsBuddy16,cleric quests,Quest farmer A13,Cleric,230,200,230,35,35,True
+SipsBuddy17,cleric quests,Quest farmer A14,Cleric,230,200,230,35,35,True
+SipsBuddy18,cleric quests,Quest farmer A15,Cleric,230,200,230,35,35,True
+SipsBuddy19,cleric quests,Quest farmer A16,Cleric,230,200,230,35,35,True
+SipsBuddy20,cleric quests,Quest farmer A17,Cleric,230,200,230,35,35,True
+SipsBuddy21,cleric quests,Quest farmer A18,Cleric,230,200,230,35,35,True
+SipsBuddy22,cleric quests,Quest farmer A19,Cleric,230,200,230,35,35,True
+SipsBuddy23,cleric quests,Quest farmer A20,Cleric,230,200,230,35,35,True
+SipsBuddy24,warrior/thief quests,Quest farmer B01,Spearman,130,100,130,35,35,True
+SipsBuddy25,warrior/thief quests,Quest farmer B02,Spearman,130,100,130,35,35,True
+SipsBuddy26,warrior/thief quests,Quest farmer B03,Spearman,130,100,130,35,35,True
+SipsBuddy27,warrior/thief quests,Quest farmer B04,Spearman,130,100,130,35,35,True
+SipsBuddy28,warrior/thief quests,Quest farmer B05,Spearman,130,100,130,35,35,True
+SipsBuddy29,warrior/thief quests,Quest farmer B06,Spearman,130,100,130,35,35,True
+SipsBuddy30,warrior/thief quests,Quest farmer B07,Spearman,130,100,130,35,35,True
+SipsBuddy31,warrior/thief quests,Quest farmer B08,Spearman,130,100,130,35,35,True
+SipsBuddy32,warrior/thief quests,Quest farmer B09,Spearman,130,100,130,35,35,True
+SipsBuddy33,warrior/thief quests,Quest farmer B10,Spearman,130,100,130,35,35,True
+SipsBuddy34,warrior/thief quests,Quest farmer B11,Spearman,130,100,130,35,35,True
+SipsBuddy35,warrior/thief quests,Quest farmer B12,Spearman,130,100,130,35,35,True
+SipsBuddy36,warrior/thief quests,Quest farmer B13,Spearman,130,100,130,35,35,True
+SipsBuddy37,warrior/thief quests,Quest farmer B14,Spearman,130,100,130,35,35,True
+SipsBuddy38,warrior/thief quests,Quest farmer C01,Assassin,410,400,410,35,35,True
+SipsBuddy39,warrior/thief quests,Quest farmer C02,Assassin,410,400,410,35,35,True
+SipsBuddy40,warrior/thief quests,Quest farmer C03,Assassin,410,400,410,35,35,True
+SipsBuddy41,warrior/thief quests,Quest farmer C04,Assassin,410,400,410,35,35,True
+SipsBuddy42,warrior/thief quests,Quest farmer C05,Assassin,410,400,410,35,35,True
+SipsBuddy43,warrior/thief quests,Quest farmer C06,Assassin,410,400,410,35,35,True
+SipsBuddy44,warrior/thief quests,Quest farmer C07,Assassin,410,400,410,35,35,True
+SipsBuddy45,warrior/thief quests,Quest farmer C08,Assassin,410,400,410,35,35,True
+SipsBuddy46,warrior/thief quests,Quest farmer C09,Bandit,420,400,420,35,35,True
+SipsBuddy47,warrior/thief quests,Quest farmer C10,Bandit,420,400,420,35,35,True
+SipsBuddy48,warrior/thief quests,Quest farmer C11,Bandit,420,400,420,35,35,True
+SipsBuddy49,warrior/thief quests,Quest farmer C12,Bandit,420,400,420,35,35,True
+SipsBuddy50,warrior/thief quests,Quest farmer C13,Bandit,420,400,420,35,35,True
+SipsBuddy51,market/logistics,Primary FM merchant,Beginner,0,0,0,30,30,True
+SipsBuddy52,market/logistics,Secondary FM merchant,Beginner,0,0,0,30,30,True
+SipsBuddy53,market/logistics,Equipment sales,Beginner,0,0,0,30,30,True
+SipsBuddy54,market/logistics,Scroll sales,Beginner,0,0,0,30,30,True
+SipsBuddy55,market/logistics,Bulk materials sales,Beginner,0,0,0,30,30,True
+SipsBuddy56,market/logistics,El Nath materials,Beginner,0,0,0,30,30,True
+SipsBuddy57,market/logistics,Ludibrium materials,Beginner,0,0,0,30,30,True
+SipsBuddy58,market/logistics,Orbis supply mule,Beginner,0,0,0,30,30,True
+SipsBuddy59,market/logistics,Perion / Ellinia supply mule,Beginner,0,0,0,30,30,True
+SipsBuddy60,market/logistics,Transfer and emergency reserves,Beginner,0,0,0,30,30,True
+SipsBuddy61,storage,Warrior weapons,Beginner,0,0,0,10,10,True
+SipsBuddy62,storage,Mage weapons,Beginner,0,0,0,10,10,True
+SipsBuddy63,storage,Thief weapons,Beginner,0,0,0,10,10,True
+SipsBuddy64,storage,Bowman weapons,Beginner,0,0,0,10,10,True
+SipsBuddy65,storage,Pirate weapons,Beginner,0,0,0,10,10,True
+SipsBuddy66,storage,Warrior armor,Beginner,0,0,0,10,10,True
+SipsBuddy67,storage,Mage armor,Beginner,0,0,0,10,10,True
+SipsBuddy68,storage,Thief armor,Beginner,0,0,0,10,10,True
+SipsBuddy69,storage,Bowman armor,Beginner,0,0,0,10,10,True
+SipsBuddy70,storage,Pirate armor,Beginner,0,0,0,10,10,True
+SipsBuddy71,storage,Gloves,Beginner,0,0,0,10,10,True
+SipsBuddy72,storage,Shoes,Beginner,0,0,0,10,10,True
+SipsBuddy73,storage,Capes,Beginner,0,0,0,10,10,True
+SipsBuddy74,storage,Accessories,Beginner,0,0,0,10,10,True
+SipsBuddy75,storage,Rare and high-stat equipment,Beginner,0,0,0,10,10,True
+SipsBuddy76,storage,Glove ATT scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy77,storage,Weapon ATT scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy78,storage,Magic ATT scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy79,storage,Overall armor scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy80,storage,Cape scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy81,storage,Shoe scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy82,storage,Helmet scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy83,storage,Glove stat scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy84,storage,Shield scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy85,storage,Rare and event scrolls,Beginner,0,0,0,10,10,True
+SipsBuddy86,storage,Power crystals,Beginner,0,0,0,10,10,True
+SipsBuddy87,storage,Dark crystals,Beginner,0,0,0,10,10,True
+SipsBuddy88,storage,"Diamond, sapphire, aquamarine",Beginner,0,0,0,10,10,True
+SipsBuddy89,storage,"Emerald, topaz, opal",Beginner,0,0,0,10,10,True
+SipsBuddy90,storage,"Garnet, amethyst, black crystal",Beginner,0,0,0,10,10,True
+SipsBuddy91,storage,Iron and bronze,Beginner,0,0,0,10,10,True
+SipsBuddy92,storage,"Mithril, adamantium, steel",Beginner,0,0,0,10,10,True
+SipsBuddy93,storage,Processed materials,Beginner,0,0,0,10,10,True
+SipsBuddy94,storage,Monster ETC drops,Beginner,0,0,0,10,10,True
+SipsBuddy95,storage,Quest materials,Beginner,0,0,0,10,10,True
+SipsBuddy96,storage,HP potions,Beginner,0,0,0,10,10,True
+SipsBuddy97,storage,MP potions,Beginner,0,0,0,10,10,True
+SipsBuddy98,storage,Elixirs and Power Elixirs,Beginner,0,0,0,10,10,True
+SipsBuddy99,storage,Food and buff consumables,Beginner,0,0,0,10,10,True
+SipsBuddy100,storage,Event items and emergency storage,Beginner,0,0,0,10,10,True

@@ -310,7 +310,7 @@ public class BotEntry {
     // Per-bot personality/behavior profile (schedule, farm/idle, breaks, sociability, risk, career).
     // Loaded at spawn from bot_config (BotPersonality.loadOrCreate); neutral defaults for non-managed
     // bots. Consumed by the break logic, the population scheduler, party formation, and chat.
-    BotPersonality personality = BotPersonality.defaults();
+    volatile BotPersonality personality = BotPersonality.defaults();
     // Persistent-crew id (managed_bot.group_id), cached at spawn. Non-null = this bot is in a crew, so
     // it logs in with + freely shares gear/ammo/supplies with its crewmates (like an owned party). Null
     // = soloist / dynamic-party bot, which never trades with strangers. SSOT: BotManager.crewMatesOnMap.
@@ -569,6 +569,7 @@ public class BotEntry {
 
     // Job advancement prompts
     int jobPromptSent = 0;
+    boolean plannedJobAdvancePending = false; // guarded by this entry; prevents duplicate delayed advances
     int lastKnownLevel = -1;
 
     // AP/SP builds

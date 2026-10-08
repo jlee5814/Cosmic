@@ -43,6 +43,7 @@ public final class BotScheduler {
             return;
         }
         started = true;
+        BotRosterService.start(); // owner rosters are explicit; never enroll them in population churn
         // The sweep self-guards on the enabled flag, so registering it always (even when disabled) is
         // free — flipping POPULATION_SCHED_ENABLED at runtime then just works.
         TimerManager.getInstance().register(this::sweep, BotManager.cfg.POPULATION_SWEEP_MS,
